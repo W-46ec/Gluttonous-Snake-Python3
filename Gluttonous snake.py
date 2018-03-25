@@ -61,7 +61,7 @@ class Core():
 				self.snake['snake'][lenght - 1][0] + 1, 
 				self.snake['snake'][lenght - 1][1]
 			)
-		elif direction == 'Right':	# 又
+		elif direction == 'Right':	# 右
 			dot = (
 				self.snake['snake'][lenght - 1][0], 
 				self.snake['snake'][lenght - 1][1] + 1
