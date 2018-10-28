@@ -13,7 +13,7 @@ class Core():
 	interval = 0.08		# 速度
 
 	# 反方向
-	negative_Direction = {
+	opposite_Direction = {
 		'Up': 'Down', 
 		'Down': 'Up', 
 		'Right': 'Left', 
@@ -71,7 +71,9 @@ class Core():
 
 	# 检测点的位置是否合法
 	def CheckIsValid(self, dot):
-		if dot in self.snake['snake']:	# 是否在撞到自身
+		# 撞到除蛇尾外的蛇身部分
+		if dot in self.snake['snake'] and \
+			dot != self.snake['snake'][0]:
 			return False
 		if dot[0] < 0 or dot[0] > self.row - 1 or \
 			dot[1] < 0 or dot[1] > self.column - 1:	# 是否撞到墙 (边界)
@@ -87,7 +89,7 @@ class Core():
 		}
 
 		# 反方向过滤
-		if direction == self.negative_Direction[self.snake['direction']]:
+		if direction == self.opposite_Direction[self.snake['direction']]:
 			return operationInfo
 
 		nextDot = self.nextDot(direction)
@@ -95,13 +97,12 @@ class Core():
 			self.snake['direction'] = direction 	# 更新方向
 			self.snake['snake'].append(nextDot)
 
-			# 没有吃到食物则将蛇尾弹出队列
-			if nextDot != self.snake['food']:
+			if nextDot == self.snake['snake'][0]:	# 吃到蛇尾时为胜利
+				operationInfo['win'] = True
+			elif nextDot != self.snake['food']:	# 没有吃到食物则将蛇尾弹出队列
 				self.snake['tail'] = self.snake['snake'].pop(0)
 			else:
 				self.score += 1
-				if self.score >= 500:	# 达到 500 分判赢
-					operationInfo['win'] = True
 				self.food()		# 刷新食物位置
 		else:
 			operationInfo['Lose'] = True	# 输
@@ -273,7 +274,7 @@ class Graph():
 			if operationInfo['Lose'] != True:
 					self.draw()
 			else:
-				messagebox.showinfo('Message', 'You lose!')
+				messagebox.showinfo('Message', 'Game over!')
 				os._exit(0)
 
 		# 暂停
@@ -295,7 +296,7 @@ class Graph():
 				if operationInfo['Lose'] != True:
 					self.draw()
 				else:
-					messagebox.showinfo('Message', 'You lose!')
+					messagebox.showinfo('Message', 'Game over!')
 					os._exit(0)
 				time.sleep(self.core.interval)
 			else:
